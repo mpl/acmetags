@@ -7,6 +7,7 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"os"
 	"os/exec"
@@ -16,6 +17,7 @@ import (
 )
 
 var (
+	output  = flag.String("o", "", "output file. will only truncate if no error and output is non empty.")
 	allTags = flag.Bool("all", false, "print tags of all windows, instead of only \"win\" windows.")
 )
 
@@ -58,6 +60,7 @@ func main() {
 		log.Fatal(err)
 	}
 	isWinHint := "-" + hostname
+	var accumTags string
 	for _, win := range windows {
 		if !(*allTags || strings.HasSuffix(win.Name, isWinHint)) {
 			continue
@@ -70,6 +73,16 @@ func main() {
 		if err != nil {
 			log.Fatalf("could not read tags of window (%v, %d): %v", win.Name, win.ID, err)
 		}
+		if *output != "" {
+			accumTags += string(tag) + "\n\n"
+			continue
+		}
 		fmt.Printf("%s\n\n", tag)
+	}
+	if *output == "" {
+		return
+	}
+	if err := ioutil.WriteFile(*output, []byte(accumTags), 0600); err != nil {
+		log.Fatalf("could not write to output file: %v", err)
 	}
 }
