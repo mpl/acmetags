@@ -57,7 +57,7 @@ func main() {
 	}
 	windows, err := acme.Windows()
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("could not get acme windows: %v", err)
 	}
 	isWinHint := "-" + hostname
 	var accumTags string
