@@ -12,13 +12,15 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+	"time"
 
 	"code.google.com/p/goplan9/plan9/acme"
 )
 
 var (
-	output  = flag.String("o", "", "output file. will only truncate if no error and output is non empty.")
-	allTags = flag.Bool("all", false, "print tags of all windows, instead of only \"win\" windows.")
+	output    = flag.String("o", "", "output file. will only truncate if no error and output is non empty.")
+	timestamp = flag.Bool("ts", false, "add a timestamp suffix to the output file name")
+	allTags   = flag.Bool("all", false, "print tags of all windows, instead of only \"win\" windows.")
 )
 
 func usage() {
@@ -81,6 +83,9 @@ func main() {
 	}
 	if *output == "" {
 		return
+	}
+	if *timestamp {
+		*output += "-" + time.Now().Format(time.RFC3339)
 	}
 	if err := ioutil.WriteFile(*output, []byte(accumTags), 0600); err != nil {
 		log.Fatalf("could not write to output file: %v", err)
