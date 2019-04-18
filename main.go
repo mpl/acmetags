@@ -56,12 +56,14 @@ func main() {
 		if err != nil {
 			log.Fatal(err)
 		}
+		parts := strings.Split(hostname, ".")
+		hostname = parts[0]
 	}
 	windows, err := acme.Windows()
 	if err != nil {
 		log.Fatalf("could not get acme windows: %v", err)
 	}
-	isWinHint := "-" + hostname
+	isWinHint := "/-" + hostname
 	var accumTags string
 	for _, win := range windows {
 		if !(*allTags || strings.HasSuffix(win.Name, isWinHint)) {
